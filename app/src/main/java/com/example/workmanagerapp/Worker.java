@@ -14,7 +14,7 @@ public class Worker extends androidx.work.Worker {
     @NonNull
     @Override
     public Result doWork() {
-        for (int i = 0; i < 1000; i++){
+        for(int i = 0; i < 1000; i++){
             Log.e("TAGY", "Count is: " + i);
         }
         return Result.success();
