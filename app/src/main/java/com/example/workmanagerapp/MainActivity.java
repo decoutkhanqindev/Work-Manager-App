@@ -11,6 +11,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.Observer;
+import androidx.work.Constraints;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
@@ -18,6 +19,7 @@ import androidx.work.WorkRequest;
 
 public class MainActivity extends AppCompatActivity {
     Button btn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,8 +33,11 @@ public class MainActivity extends AppCompatActivity {
 
         btn = findViewById(R.id.runWM);
 
+        // add constraints to wr
+        Constraints constraints = new Constraints.Builder().setRequiresCharging(true).build();
+
         // making use of worker
-        WorkRequest wr = new OneTimeWorkRequest.Builder(Worker.class).build();
+        WorkRequest wr = new OneTimeWorkRequest.Builder(Worker.class).setConstraints(constraints).build();
 
         // enqueue the request with WorkManager
         btn.setOnClickListener(new View.OnClickListener() {
