@@ -12,10 +12,13 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.Observer;
 import androidx.work.Constraints;
+import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 import androidx.work.WorkRequest;
+
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     Button btn;
@@ -33,11 +36,17 @@ public class MainActivity extends AppCompatActivity {
 
         btn = findViewById(R.id.runWM);
 
+        // data
+        Data inputData = new Data.Builder().putInt("max_limit", 8888).build();
+
         // add constraints to wr
         Constraints constraints = new Constraints.Builder().setRequiresCharging(true).build();
 
         // making use of worker
-        WorkRequest wr = new OneTimeWorkRequest.Builder(Worker.class).setConstraints(constraints).build();
+        WorkRequest wr = new OneTimeWorkRequest.Builder(Worker.class)
+                .setConstraints(constraints)
+                .setInputData(inputData)
+                .build();
 
         // enqueue the request with WorkManager
         btn.setOnClickListener(new View.OnClickListener() {
@@ -55,7 +64,14 @@ public class MainActivity extends AppCompatActivity {
                     public void onChanged(WorkInfo workInfo) {
                         if (workInfo != null) {
                             Toast.makeText(MainActivity.this,
-                                    "Status" + workInfo.getState().name(),
+                                    "Status " + workInfo.getState().name(),
+                                    Toast.LENGTH_SHORT).show();
+                        }
+
+                        if (Objects.requireNonNull(workInfo).getState().isFinished()) {
+                            Data gettingData = workInfo.getOutputData();
+                            Toast.makeText(MainActivity.this,
+                                    " " + gettingData.getString("msg"),
                                     Toast.LENGTH_SHORT).show();
                         }
                     }
